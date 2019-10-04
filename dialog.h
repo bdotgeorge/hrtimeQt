@@ -2,6 +2,7 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include <QMultiMap>
 #include <QString>
 #include <QVector>
 
