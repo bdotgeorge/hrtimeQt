@@ -34,7 +34,7 @@
        <property name="font">
         <font>
          <family>Verdana</family>
-         <pointsize>16</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
       </widget>

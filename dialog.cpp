@@ -260,8 +260,13 @@ bool converterWorker(QString &adress)
 void Dialog::on_pushButton_clicked()
 {
     QString adress = ui->lineAdressInput->text();
+    if (converterWorker(adress)) {
+        ui->rsultlLabel->setText("все прошло хорошо ;-)");
+        ui->lineAdressInput->clear();
 
-    converterWorker(adress);
+    } else {
+        ui->rsultlLabel->setText("Что то пошло не так");
+    }
 
     //QString test = "	Вход	01.08.2019	09:24	Выход	01.08.2019	17:05	7:41";
     // ui->rsultlLabel->setText(toTextTableForOnePerson(testperson()));
