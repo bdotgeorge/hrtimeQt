@@ -57,6 +57,7 @@ QString toNormalHoursAndMinutes(int fullMinutes)
     s.append(fullMinutes / 60);
     s.append(":");
     s.append(fullMinutes % 60);
+    s.append(" ");
     return s;
 }
 
@@ -100,7 +101,7 @@ QString printStew(int e)
 
 int finder(QVector<int> &dates, int &date, int from)
 {
-    int result = -2;
+    int result = -1;
     if (from == 0) {
         for (int i = 0; i < dates.size(); ++i) {
             if (dates[i] == date) {
@@ -116,8 +117,6 @@ int finder(QVector<int> &dates, int &date, int from)
             }
             if (dates[i] == date) {
                 result = i;
-            } else if (result == -2 && i == dates.size() - 1) {
-                result = -1;
             }
         }
     }
@@ -158,7 +157,7 @@ QString toTextTableForOnePerson(EveryPerson person) // needed correct implimenta
     out.append(" ");
     for (int i = 0; i < 31; ++i) {
         if (finder(person.dates, i, 0) == i) {
-            out.append(printStew(person.jobTime[i]));
+            out.append(toNormalHoursAndMinutes(person.jobTime[i]));
             out.append("|");
         }
     }
@@ -200,16 +199,18 @@ EveryPerson toStruct(QString &onePersonStr)
 {
     EveryPerson slave;
     QStringList list = onePersonStr.split("\n", QString::SkipEmptyParts);
-    slave.name = list.first().split("\t", QString::SkipEmptyParts).first();
-    for (int i = 4; i < list.length(); ++i) {
-        if (list[i].length() > 45) {
-            QPair<QString, int> pair = basicStringTokenaser(list[i]);
-            int date = pair.first.split(".", QString::SkipEmptyParts).first().toInt();
-            if (finder(slave.dates, date, 0) == -1) {
-                slave.dates.push_back(date);
-                slave.jobTime.push_back(pair.second);
-            } else if (finder(slave.dates, date, 0) != -1) {
-                slave.jobTime[finder(slave.dates, date, 0)] += pair.second;
+    if (!list.isEmpty()) {
+        slave.name = list.first().split("\t", QString::SkipEmptyParts).first();
+        for (int i = 4; i < list.length(); ++i) {
+            if (list[i].length() > 45) {
+                QPair<QString, int> pair = basicStringTokenaser(list[i]);
+                int date = pair.first.split(".", QString::SkipEmptyParts).first().toInt();
+                if (finder(slave.dates, date, 0) == -1) {
+                    slave.dates.push_back(date);
+                    slave.jobTime.push_back(pair.second);
+                } else if (finder(slave.dates, date, 0) != -1) {
+                    slave.jobTime[finder(slave.dates, date, 0)] += pair.second;
+                }
             }
         }
     }
