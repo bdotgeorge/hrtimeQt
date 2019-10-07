@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QPair>
 
+#include <iomanip>
+
 Dialog::Dialog(QWidget *parent) : QDialog(parent), ui(new Ui::Dialog)
 {
     ui->setupUi(this);
@@ -25,9 +27,9 @@ struct EveryPerson
     QString name;
     QVector<int> dates;
     QVector<int> jobTime;
-    QMap<int, int> howYouWorkInTisMonth;
+    // QMap<int, int> howYouWorkInTisMonth;
 };
-
+/*
 void toMap(EveryPerson &person)
 {
     // QMap<int, int>::iterator it = person.howYouWorkInTisMonth.begin();
@@ -41,7 +43,7 @@ void toMap(EveryPerson &person)
         // person.howYouWorkInTisMonth.insert(person.dates[i],person.jobTime[i]);
     }
 }
-
+*/
 int toMinutten(QString &s)
 {
     int h = s.split(":", QString::SkipEmptyParts).first().toInt();
@@ -77,33 +79,91 @@ EveryPerson testperson()
     EveryPerson person;
     person.name = "name surname lastname"; // test Subject del after
     person.dates = {1, 4, 5, 6, 7, 8, 9, 10}; // test Subject del after
-    person.jobTime = {3, 5, 4, 6, 8, 7, 5, 10}; // test Subject del after
+    person.jobTime = {53, 55, 54, 56, 58, 57, 55, 30}; // test Subject del after
     return person;
+}
+
+QString printStew(int e)
+{
+    QString string = "";
+    if (e <= 0) {
+        string.append("  ").append("-").append(" ");
+    }
+    if (e > 0 && e <= 9) {
+        string.append("  ").append(e).append(" ");
+    }
+    if (e > 9) {
+        string.append(" ").append(e).append(" ");
+    }
+    return string;
+}
+
+int finder(QVector<int> &dates, int &date, int from)
+{
+    int result = -2;
+    if (from == 0) {
+        for (int i = 0; i < dates.size(); ++i) {
+            if (dates[i] == date) {
+                result = i;
+            } else if (result == -2 && i == dates.size() - 1) {
+                result = -1;
+            }
+        }
+    } else {
+        for (int i = 0; i < dates.size(); ++i) {
+            if (i == from) {
+                continue;
+            }
+            if (dates[i] == date) {
+                result = i;
+            } else if (result == -2 && i == dates.size() - 1) {
+                result = -1;
+            }
+        }
+    }
+
+    return result;
 }
 
 QString toTextTableForOnePerson(EveryPerson person) // needed correct implimentation
 {
-    QMap<int, int>::iterator it = person.howYouWorkInTisMonth.begin();
     QString out = "";
-    QTextStream stream(&out);
+    // QTextStream stream(&out);
+    /*
+    stream << person.name;
+    stream << "  |";
+    for (int i = 0; i < 31; ++i) {
+        stream << printStew(finder(person.dates, i)) << "|";
+    }
+    stream << "\n";
+    for (int i = 0; i < person.name.length(); ++i) {
+        stream << " ";
+    }
+    for (int i = 0; i < 31; ++i) {
+        if (finder(person.dates, i) == i) {
+            stream << printStew(person.jobTime[i]) << "|";
+        }
+    }
+    */
     out.append(person.name);
-    out.append("  | ");
-    int spaseForName = out.length();
-
-    for (auto &h : person.howYouWorkInTisMonth) {
-        stream << h;
+    out.append("  |");
+    for (int i = 0; i < 31; ++i) {
+        out.append(printStew(finder(person.dates, i, 0)));
+        out.append("|");
     }
-
     out.append("\n");
-    int spaseForName2 = out.length() + person.name.length();
-
-    out.append("\n");
-    for (int i = 0; i < spaseForName2; i++) {
-        out.append("=");
+    for (int i = 0; i < person.name.length(); ++i) {
+        out.append(" ");
     }
-
+    out.append(" ");
+    for (int i = 0; i < 31; ++i) {
+        if (finder(person.dates, i, 0) == i) {
+            out.append(printStew(person.jobTime[i]));
+            out.append("|");
+        }
+    }
     out.append("\n");
-
+    out.append("\n");
     return out;
 }
 
@@ -136,18 +196,62 @@ bool toFile(QString outPutString, const QString &pathFile)
     return true;
 }
 
-QList<EveryPerson> toStructData(QStringList)
+EveryPerson toStruct(QString &onePersonStr)
+{
+    EveryPerson slave;
+    QStringList list = onePersonStr.split("\n", QString::SkipEmptyParts);
+    slave.name = list.first().split("\t", QString::SkipEmptyParts).first();
+    for (int i = 4; i < list.length(); ++i) {
+        if (list[i].length() > 45) {
+            QPair<QString, int> pair = basicStringTokenaser(list[i]);
+            int date = pair.first.split(".", QString::SkipEmptyParts).first().toInt();
+            if (finder(slave.dates, date, 0) == -1) {
+                slave.dates.push_back(date);
+                slave.jobTime.push_back(pair.second);
+            } else if (finder(slave.dates, date, 0) != -1) {
+                slave.jobTime[finder(slave.dates, date, 0)] += pair.second;
+            }
+        }
+    }
+    return slave;
+}
+
+void personSummator(EveryPerson e) //  not nesessary now cause in Dialog::toStruct it already done
+{
+    for (int i = 0; i < e.dates.size(); ++i) {
+        int position = finder(e.dates, e.dates[i], i);
+        if (position != -1) {
+            e.dates.erase(&position);
+            e.jobTime[i] += e.jobTime[position];
+            e.jobTime.erase(&position);
+        } else {
+            continue;
+        }
+    }
+}
+
+QList<EveryPerson> toStructData(QStringList &listString)
 {
     QList<EveryPerson> listForAllPersons;
 
-    // toDo inplimentatin
+    for (QString string : listString) {
+        listForAllPersons.push_back(toStruct(string));
+    }
     return listForAllPersons;
 }
 
-void converterWorker(QString &adress)
+bool converterWorker(QString &adress)
 {
+    QString outputAdres = adress.mid(0, adress.length() - 4).append("OUTPUT.txt");
+
     QString inputtedText = QString(fromFile(adress));
     QStringList stplittedByPersons = separatedByPerson(inputtedText);
+    QList<EveryPerson> parcedByPerson = toStructData(stplittedByPersons);
+    QString readyText;
+    for (EveryPerson e : parcedByPerson) {
+        readyText.append(toTextTableForOnePerson(e));
+    }
+    return toFile(readyText, outputAdres);
 }
 
 // end of block
@@ -155,9 +259,10 @@ void converterWorker(QString &adress)
 void Dialog::on_pushButton_clicked()
 {
     QString adress = ui->lineAdressInput->text();
-    QString test = "	Вход	01.08.2019	09:24	Выход	01.08.2019	17:05	7:41";
 
-    ui->rsultlLabel->setText(toTextTableForOnePerson(testperson()));
+    converterWorker(adress);
 
+    //QString test = "	Вход	01.08.2019	09:24	Выход	01.08.2019	17:05	7:41";
+    // ui->rsultlLabel->setText(toTextTableForOnePerson(testperson()));
     // QMessageBox::information(this, basicStringTokenaser(test).first, basicStringTokenaser(test).second);
 }
