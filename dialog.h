@@ -19,6 +19,7 @@ class Dialog : public QDialog
 public:
     Dialog(QWidget *parent = nullptr);
     ~Dialog();
+    static  QString month;
 
 private slots:
     void on_pushButton_clicked();
@@ -26,6 +27,8 @@ private slots:
 
     void on_openButton_clicked();
 
+
+    void on_checkBox_stateChanged(int arg1);
 
 private:
     Ui::Dialog *ui;

@@ -70,32 +70,33 @@ QString intToString(int a){
 }
 
 
+
 QString toMonth (int month){
     QString currentmonth = "";
     switch (month) {
-    case 1: currentmonth = "январь";
+    case 1: currentmonth = "января";
         break;
-    case 2: currentmonth = "февраль";
+    case 2: currentmonth = "февраля";
         break;
-    case 3: currentmonth = "март";
+    case 3: currentmonth = "марта";
         break;
-    case 4: currentmonth = "апрель";
+    case 4: currentmonth = "апреля";
         break;
-    case 5: currentmonth = "май";
+    case 5: currentmonth = "мая";
         break;
-    case 6: currentmonth = "июнь";
+    case 6: currentmonth = "июня";
         break;
-    case 7: currentmonth = "июль";
+    case 7: currentmonth = "июля";
         break;
-    case 8: currentmonth = "август";
+    case 8: currentmonth = "августа";
         break;
-    case 9: currentmonth = "сентбрь";
+    case 9: currentmonth = "сентбря";
         break;
-    case 10: currentmonth = "октябрь";
+    case 10: currentmonth = "октября";
         break;
-    case 11: currentmonth = "ноябрь";
+    case 11: currentmonth = "ноября";
         break;
-    case 12: currentmonth = "декабрь";
+    case 12: currentmonth = "декабря";
         break;
     }
     return currentmonth;
@@ -109,21 +110,7 @@ struct EveryPerson
     QVector<int> jobTime;
     // QMap<int, int> howYouWorkInTisMonth;
 };
-/*
-void toMap(EveryPerson &person)
-{
-    // QMap<int, int>::iterator it = person.howYouWorkInTisMonth.begin();
-    for (int i = 0; i < person.dates.size(); i++) {
-        if (person.howYouWorkInTisMonth.find(person.dates[i]) != person.howYouWorkInTisMonth.end()) {
-            int newValue = person.howYouWorkInTisMonth.value(person.howYouWorkInTisMonth.last()) + person.jobTime[i];
-            person.howYouWorkInTisMonth.value(person.howYouWorkInTisMonth.last(), newValue);
-        } else {
-            person.howYouWorkInTisMonth.insert(person.dates[i], person.jobTime[i]);
-        }
-        // person.howYouWorkInTisMonth.insert(person.dates[i],person.jobTime[i]);
-    }
-}
-*/
+
 int toMinutten(QString &s)
 {
     int h = s.split(":", QString::SkipEmptyParts).first().toInt();
@@ -142,8 +129,9 @@ QString toNormalHoursAndMinutes(int fullMinutes)
     }else {
          s.append(intToString(fullMinutes % 60));
 }
-
-   // s.append(" ");
+if (s.length() < 5){
+    s.append(" ");
+}
     return s;
 }
 
@@ -181,10 +169,10 @@ QString printStew(int e)
         string.append("  ").append("-").append(" ");
     }
     if (e > 0 && e <= 9) {
-        string.append("  ").append(intToString(e)).append(" ");
+        string.append("  ").append(intToString(e)).append("  ");
     }
     if (e > 9) {
-        string.append(" ").append(intToString(e)).append(" ");
+        string.append("  ").append(intToString(e)).append(" ");
     }
     return string;
 }
@@ -214,106 +202,85 @@ int finder(QVector<int> &dates, int &date, int from)
     return result;
 }
 
+QString getMonth(QString currentPersonString){
+    QString currentMonth;
+    if (currentPersonString.split("\n", QString::SkipEmptyParts).size() > 5){
+        currentMonth = toMonth(currentPersonString.split("\n", QString::SkipEmptyParts).at(3).split("\t", QString::SkipEmptyParts).at(1).split(".", QString::SkipEmptyParts).at(1).toInt());
+    }
+   // Dialog::month = currentMonth;
+
+    return  currentMonth;
+}
+
+
+
 QString toTextTableForOnePerson(EveryPerson person) // needed correct implimentation
 {
-    QString out  = "";
-    // QTextStream stream(&out);
-    /*
-    stream << person.name;
-    stream << "  |";
-    for (int i = 0; i < 31; ++i) {
-        stream << printStew(finder(person.dates, i)) << "|";
-    }
-    stream << "\n";
-    for (int i = 0; i < person.name.length(); ++i) {
-        stream << " ";
-    }
-    for (int i = 0; i < 31; ++i) {
-        if (finder(person.dates, i) == i) {
-            stream << printStew(person.jobTime[i]) << "|";
-        }
-    }
-    */
-    out.append(person.name);
-    out.append("|");
-    for (int i = 0; i <= 15; ++i) {
-        if (person.dates.contains(i)){
-            out.append(printStew(i));
-        }else {
-            out.append("    ");
-}
-        out.append("|");
-    }
-    int separatist = out.size();
-    out.append("\n");
-    for (int i = 0; i <= person.name.length(); ++i) {
-        out.append(" ");
-    }
-    for (int i = 0; i <= 15; ++i) {
-        if (person.dates.contains(i) && i < person.dates.size()) {
-            out.append(toNormalHoursAndMinutes(person.jobTime[i-1]));
-            out.append("|");
-        }else {
-            out.append("    |");
-}
-    }
-    out.append("\n");
+    QString out  = "\n";
+   if (!person.dates.isEmpty()){
+      out.append(person.name);
+      out.append("  |");
+      int tempCounter = 0;
 
-    for (int i = 0; i <= person.name.length(); ++i) {
-        out.append(" ");
-    }
-    for (int i = 16; i <= 31; ++i) {
-        if (person.dates.contains(i)){
-            out.append(printStew(i));
-        }else {
-            out.append("    ");
-}
-        out.append("|");
-    }
-    out.append("\n");
-    for (int i = 0; i <= person.name.length(); ++i) {
-        out.append(" ");
-    }
+      if (person.dates.size() <= 31){
+          for (int i = 0; i < person.dates.size(); ++i) {   //  вывод дат 1 строка
+
+          out.append(printStew(person.dates[i]));
+          out.append("|");
+               }
+      int separatist = out.size();
+              out.append("\n");
+              for (int i = 0; i <= person.name.length()+1; ++i) {  // сдвиг на длинну имени
+                  out.append(" ");
+            }
+              out.append("|");
+
+              for (int i = 0; i < person.jobTime.size(); ++i) {   //  вывод дат 1 строка
+
+              out.append(toNormalHoursAndMinutes(person.jobTime[i]));
+              out.append("|");
+                   }
+             out.append("\n");
+             // разделитель
+             for (int i = 0; i <= separatist; ++i) {
+                 out.append("=");
+             }
+            out.append("\n");
+      }
 
 
-    //out.append(" ");
-    for (int i = 16; i <= 31; ++i) {
-        if (person.dates.contains(i) && i < person.dates.size()) {
-            out.append(toNormalHoursAndMinutes(person.jobTime[i]));
-            out.append("|");
-        }else {
-            out.append("    |");
+   }else {
+        out = out.left(out.length()-1);
+
 }
-    }
-    out.append("\n");
-    for (int i = 0; i <= separatist; ++i) {
-        out.append("=");
-    }
-    out.append("\n");
     return out;
-}
+    }
 
 QString toStolbic(EveryPerson person){
     QString out = "";
-
-    out.append(person.name);
     out.append("\n");
-    for (int i = 0; i < person.dates.size(); ++i) {
-        out.append("\t");
-        out.append(person.month);
+    if (!person.dates.isEmpty()){
+        out.append(person.name);
         out.append("\n");
-        out.append(printStew(person.dates[i]));
-        out.append("\t");
-        if (person.dates.contains(i) && i < person.dates.size()) {
-            out.append(toNormalHoursAndMinutes(person.jobTime[i]));
-            out.append("\n");
-        }else {
-            out.append("\n");
-}
+        for (int i = 0; i < person.dates.size(); ++i) {
+           // out.append("\t");
+            out.append(printStew(person.dates[i]));
+            out.append(" ");
+            out.append(person.month);
+            out.append(" ");
+            out.append("\t");
+            if (person.dates[i] && i < person.dates.size()) {
+                out.append(toNormalHoursAndMinutes(person.jobTime[i]));
+                out.append("\n");
+            }else {
+                out.append("\n");
     }
+        }
 
 
-
+    }else {
+out.append(" ");
+}
 
     return  out;
 }
@@ -369,25 +336,9 @@ EveryPerson toStruct(QString &onePersonStr)
                 }
             }
         }
-         //slave.month =toMonth( pair.first.split(".", QString::SkipEmptyParts).at(1).toInt());
+         slave.month = getMonth(onePersonStr);
     }
     return slave;
-}
-
-
-
-void personSummator(EveryPerson e) //  not nesessary now cause in Dialog::toStruct it already done
-{
-    for (int i = 0; i < e.dates.size(); ++i) {
-        int position = finder(e.dates, e.dates[i], i);
-        if (position != -1) {
-            e.dates.erase(&position);
-            e.jobTime[i] += e.jobTime[position];
-            e.jobTime.erase(&position);
-        } else {
-            continue;
-        }
-    }
 }
 
 QList<EveryPerson> toStructData(QStringList &listString)
@@ -408,20 +359,18 @@ bool converterWorker(QString &adress, bool flag)
     QStringList stplittedByPersons = separatedByPerson(inputtedText);
     QList<EveryPerson> parcedByPerson = toStructData(stplittedByPersons);
     QString readyText;
+
+
     for (EveryPerson e : parcedByPerson) {
         if (flag){
-        readyText.append(toTextTableForOnePerson(e));  //вывод в таблица
+      readyText.append(toStolbic(e)); // вывод в столбик
         }
         else {
-            readyText.append(toStolbic(e)); // вывод в столбик
+        readyText.append(toTextTableForOnePerson(e));  //вывод в таблица
         }
     }
     return toFile(readyText, outputAdres);
 }
-
-
-
-
 
 // end of block
 
@@ -455,25 +404,34 @@ void Dialog::on_openButton_clicked()
                     "C://",
                     "Text File (*.txt)"
                     );
-        //QMessageBox::information(this,tr("Имя файла"), openfile);
 
         QString adress = openfile;
 
 
 
 
-        //доработать открытие файла
         ui->lineAdressInput->setText(adress);
-        bool tablecheskbox = ui->checkBox->isDown();
+        bool tablecheskbox = ui->checkBox->isChecked();
 
         if (converterWorker(adress, tablecheskbox)) {
-            ui->rsultlLabel->setText("таки кашерный файл");
+            ui->rsultlLabel->setText("Всё прошло хорошо");
             ui->lineAdressInput->clear();
 
         } else {
             ui->rsultlLabel->setText(" ты подсовываешь  мне какую то дичь");
         }
+        QMessageBox::information(this, "Developed by",
+                                 "Vladimir  D. Nagaev & George V. Bozhedomov "
+                                 "\n "
+                                 "LAS Technology Co www.lastechnology.ru",
+                                 "Спасибо");
 
 
     }
 
+
+
+void Dialog::on_checkBox_stateChanged(int arg1)
+{
+
+}

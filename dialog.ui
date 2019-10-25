@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,32 +13,63 @@
     <height>153</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
   <property name="windowTitle">
-   <string>Work blacks the sun is still high</string>
+   <string>Work hard, blacks the sun  still high v1.0 (beta)</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>C:/Users/User/Downloads/kisspng-vector-graphics-computer-icons-clip-art-career-ico-download-clip-art-black-and-white-archive-intechni-5c02a5d6c3b6a5.4541350815436773988017.jpg</normaloff>C:/Users/User/Downloads/kisspng-vector-graphics-computer-icons-clip-art-career-ico-download-clip-art-black-and-white-archive-intechni-5c02a5d6c3b6a5.4541350815436773988017.jpg</iconset>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="asklabel">
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="checkBox">
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Заделать столбиком ?</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="openButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <family>Verdana</family>
          <pointsize>16</pointsize>
         </font>
        </property>
-       <property name="text">
-        <string>Адрес файла</string>
+       <property name="focusPolicy">
+        <enum>Qt::WheelFocus</enum>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineAdressInput">
-       <property name="font">
-        <font>
-         <family>Verdana</family>
-         <pointsize>10</pointsize>
-        </font>
+       <property name="text">
+        <string>Открыть файл</string>
+       </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -66,8 +100,18 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="openButton">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineAdressInput">
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="asklabel">
        <property name="font">
         <font>
          <family>Verdana</family>
@@ -75,20 +119,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Открыть файл</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="checkBox">
-       <property name="font">
-        <font>
-         <family>Verdana</family>
-         <pointsize>9</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Заделать столбиком ?</string>
+        <string>Адрес файла</string>
        </property>
       </widget>
      </item>
