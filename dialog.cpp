@@ -102,6 +102,49 @@ QString toMonth (int month){
     return currentmonth;
 }
 
+QString toCurrentMonth (QString month){
+    QString currentmonth = "";
+
+    if (month.toLower().contains("янв")){
+        currentmonth = "Январь";
+    }
+    if (month.toLower().contains("февр")){
+        currentmonth = "Февраль";
+    }
+    if (month.toLower().contains("мар")){
+        currentmonth = "Март ";
+    }
+    if (month.toLower().contains("апр")){
+        currentmonth = "Апрель ";
+    }
+    if (month.toLower().contains("мая")){
+        currentmonth = "Май";
+    }
+    if (month.toLower().contains("июн")){
+        currentmonth = "Июнь";
+    }
+    if (month.toLower().contains("июл")){
+        currentmonth = "Июль";
+    }
+    if (month.toLower().contains("авг")){
+        currentmonth = "Август";
+    }
+    if (month.toLower().contains("сент")){
+        currentmonth = "Сентябрь";
+    }
+    if (month.toLower().contains("окт")){
+        currentmonth = "Октябрь";
+    }
+    if (month.toLower().contains("ноя")){
+        currentmonth = "Ноябрь";
+    }
+    if (month.toLower().contains("Декабрь")){
+        currentmonth = "Декабрь";
+    }
+
+    return currentmonth;
+}
+
 struct EveryPerson
 {
     QString month;
@@ -121,17 +164,32 @@ int toMinutten(QString &s)
 QString toNormalHoursAndMinutes(int fullMinutes)
 {
     QString s;
-    s.append(intToString(fullMinutes / 60));
+    if (fullMinutes >= 285) { // отнять 45 минут если больше 4 часов  45 минут рабочего дня
+        s.append(intToString((fullMinutes - 45) / 60));
     s.append(":");
-    if (fullMinutes% 60 < 9){
+    if (((fullMinutes - 45) % 60) <= 9){
+        s.append(intToString(0));
+         s.append(intToString((fullMinutes - 45) % 60));
+    }else {
+         s.append(intToString((fullMinutes - 45) % 60));
+}
+    while (s.length()< 5) {
+        s.append(" ");
+    }
+    }
+    else { // если меньше 4 часов  45 минут рабочего дня
+        s.append(intToString(fullMinutes / 60));
+    s.append(":");
+    if ((fullMinutes % 60) <= 9){
         s.append(intToString(0));
          s.append(intToString(fullMinutes % 60));
     }else {
          s.append(intToString(fullMinutes % 60));
 }
-if (s.length() < 5){
-    s.append(" ");
-}
+    while (s.length()< 5) {
+        s.append(" ");
+    }
+    }
     return s;
 }
 
@@ -279,7 +337,7 @@ QString toStolbic(EveryPerson person){
 
 
     }else {
-out.append(" ");
+out = out.left(out.length()-1);
 }
 
     return  out;
@@ -359,10 +417,11 @@ bool converterWorker(QString &adress, bool flag)
     QStringList stplittedByPersons = separatedByPerson(inputtedText);
     QList<EveryPerson> parcedByPerson = toStructData(stplittedByPersons);
     QString readyText;
-
-
+    readyText.append(toCurrentMonth(parcedByPerson.first().month));
+    readyText.append("\n");
     for (EveryPerson e : parcedByPerson) {
         if (flag){
+
       readyText.append(toStolbic(e)); // вывод в столбик
         }
         else {
@@ -384,16 +443,7 @@ void Dialog::on_pushButton_clicked()
     } else {
         ui->rsultlLabel->setText("Что то пошло не так");
     }
-
-    //QString test = "	Вход	01.08.2019	09:24	Выход	01.08.2019	17:05	7:41";
-    // ui->rsultlLabel->setText(toTextTableForOnePerson(testperson()));
-    // QMessageBox::information(this, basicStringTokenaser(test).first, basicStringTokenaser(test).second);
 }
-
-// open file in dilog window )))))
-
-// george implimentation
-
 
 
 void Dialog::on_openButton_clicked()
